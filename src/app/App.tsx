@@ -16,7 +16,7 @@ export default function App() {
   const [vpnStatus, setVpnStatus] = useState<VpnStatus>("unprotected");
   const [connectedCountry, setConnectedCountry] = useState<string | null>(null);
   const [physicalCountry, setPhysicalCountry] = useState("Belarus");
-  const [showFirewall, setShowFirewall] = useState(false);
+  const [showFirewall, setShowFirewall] = useState(true);
   const connectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Resizable left panel ──────────────────────────────────────────────────
