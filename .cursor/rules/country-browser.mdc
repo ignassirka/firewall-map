@@ -1,0 +1,45 @@
+---
+description: "Rules for Country browser — activated when working in this feature's directory"
+globs:
+  - "src/app/components/CountryBrowser.tsx"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/country-browser.md`
+2. `/docs/features/_overview.md`
+
+Use `Logic.md` for Countries / Recents / Profiles tab behavior.
+
+## Reusable Components
+
+From `/docs/features/country-browser.md` — Dependencies on Shared Code:
+
+| Path | Description |
+|------|-------------|
+| `src/app/components/flagComponents.tsx` | `getFlagUrl` and flag URLs |
+| `src/imports/Fastest.tsx` | Fastest row icon |
+| `src/imports/svg-6mqrghog0w.ts`, `svg-gr3yl27tf4.ts`, `svg-m0k6r02h9x.ts` | Chip/tab/search SVG paths |
+| `src/imports/profile-icons/*` | Profile row SVG assets |
+
+If a shared component covers 80%+ of the requirement, extend it via props/config. Do NOT fork it. Do NOT create a parallel version.
+
+## Feature-Specific Constraints
+
+- Preserve `CountryRowProps` discriminated union (`vpn` vs `navigate`) type safety.
+- Tab and search behavior are specified in `Logic.md` (country browser sections).
+
+## Patterns to Follow
+
+- Local state for `activeTab`, search, and country sub-tabs; callbacks upward for selection and VPN actions.
+
+## What NOT to Do
+
+- Do NOT collapse `CountryRow` variants into untyped props.
+- Do NOT duplicate Figma SVG modules or `Fastest` — import from `src/imports/`.
+- Do NOT modify `App.tsx` wiring without approval.
+- Do NOT add routes not listed in the feature doc (none).
+- Do NOT change public props of `CountryBrowser` / `CountryRow` without updating `/docs/features/country-browser.md` and parent `ISPRegulationsPanel.tsx`.

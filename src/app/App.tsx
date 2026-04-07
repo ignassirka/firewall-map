@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import { ISPRegulationsPanel } from "./components/ISPRegulationsPanel";
 import { WorldMap } from "./components/WorldMap";
+import AppFirewall from "./components/AppFirewall";
 import type { MapLayerOption } from "../imports/RightVpnFeatures";
 
 export type VpnStatus = "unprotected" | "connecting" | "protected";
@@ -15,6 +16,7 @@ export default function App() {
   const [vpnStatus, setVpnStatus] = useState<VpnStatus>("unprotected");
   const [connectedCountry, setConnectedCountry] = useState<string | null>(null);
   const [physicalCountry, setPhysicalCountry] = useState("Belarus");
+  const [showFirewall, setShowFirewall] = useState(false);
   const connectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── Resizable left panel ──────────────────────────────────────────────────
@@ -77,10 +79,16 @@ export default function App() {
     setConnectedCountry(null);
   }, []);
 
+  const [leafletMap, setLeafletMap] = useState<any>(null);
+
+  const handleMapReady = useCallback((map: any) => {
+    setLeafletMap(map);
+  }, []);
+
   return (
     <div className="h-screen w-screen bg-[#0f0d14] flex items-center justify-center p-6">
       <div ref={containerRef} className="relative h-[830px] w-[1170px] rounded-[8px] overflow-hidden border border-[rgba(255,255,255,0.1)]">
-        {/* Full-width map behind everything */}
+        {/* Full-width map — always visible, shared between views */}
         <div className="absolute inset-0">
           <WorldMap
             selectedCountry={selectedCountry}
@@ -94,43 +102,64 @@ export default function App() {
             physicalCountry={physicalCountry}
             onPhysicalCountryChange={setPhysicalCountry}
             panelWidth={panelWidth}
+            firewallMode={showFirewall}
+            onMapReady={handleMapReady}
           />
         </div>
 
-        {/* Left: Floating Panel (resizable) */}
-        <div
-          className="absolute top-[8px] left-[8px] bottom-[8px] z-[1000]"
-          style={{ width: panelWidth }}
-        >
-          <ISPRegulationsPanel
-            externalSelectedCountry={selectedCountry}
-            onCountryChange={handlePanelChange}
-            activeLayer={selectedMapLayer}
-            onClearLayer={handleClearMapLayer}
-            onVpnConnect={handleConnect}
-            onVpnDisconnect={handleDisconnect}
-            vpnConnectedCountry={connectedCountry}
-            vpnStatus={vpnStatus}
-            physicalCountry={physicalCountry}
-          />
-
-          {/* Drag handle – sits on the right edge of the panel */}
+        {showFirewall ? (
+          <AppFirewall map={leafletMap} physicalCountry={physicalCountry} panelWidth={panelWidth} vpnStatus={vpnStatus} connectedCountry={connectedCountry} />
+        ) : (
+          /* Left: Floating Panel (resizable) */
           <div
-            className="absolute top-0 bottom-0 right-0 w-[8px] z-[10] cursor-col-resize flex items-stretch justify-center"
-            onPointerDown={handleResizeStart}
-            onMouseEnter={() => setHandleHovered(true)}
-            onMouseLeave={() => setHandleHovered(false)}
+            className="absolute top-[8px] left-[8px] bottom-[8px] z-[1000]"
+            style={{ width: panelWidth }}
           >
-            <div
-              className="w-[2px] rounded-full transition-opacity duration-150"
-              style={{
-                background: "rgba(255,255,255,0.25)",
-                opacity: handleHovered ? 1 : 0,
-              }}
+            <ISPRegulationsPanel
+              externalSelectedCountry={selectedCountry}
+              onCountryChange={handlePanelChange}
+              activeLayer={selectedMapLayer}
+              onClearLayer={handleClearMapLayer}
+              onVpnConnect={handleConnect}
+              onVpnDisconnect={handleDisconnect}
+              vpnConnectedCountry={connectedCountry}
+              vpnStatus={vpnStatus}
+              physicalCountry={physicalCountry}
             />
+
+            {/* Drag handle – sits on the right edge of the panel */}
+            <div
+              className="absolute top-0 bottom-0 right-0 w-[8px] z-[10] cursor-col-resize flex items-stretch justify-center"
+              onPointerDown={handleResizeStart}
+              onMouseEnter={() => setHandleHovered(true)}
+              onMouseLeave={() => setHandleHovered(false)}
+            >
+              <div
+                className="w-[2px] rounded-full transition-opacity duration-150"
+                style={{
+                  background: "rgba(255,255,255,0.25)",
+                  opacity: handleHovered ? 1 : 0,
+                }}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
+
+      {/* View toggle — bottom-right corner */}
+      <button
+        onClick={() => setShowFirewall((v) => !v)}
+        className="fixed bottom-[24px] right-[24px] z-[9999] flex items-center gap-[8px] px-[14px] py-[8px] rounded-[8px] backdrop-blur-[12px] border border-[rgba(255,255,255,0.1)] transition-colors cursor-pointer"
+        style={{
+          backgroundColor: showFirewall ? "rgba(44,255,204,0.12)" : "rgba(255,255,255,0.06)",
+          fontVariationSettings: "'opsz' 10.5",
+          fontFeatureSettings: "'fina', 'init'",
+        }}
+      >
+        <span className="text-[rgba(255,255,255,0.7)] text-[12px]">
+          {showFirewall ? "← Privacy Map" : "App Firewall →"}
+        </span>
+      </button>
     </div>
   );
 }

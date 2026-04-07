@@ -1,0 +1,47 @@
+---
+description: "Rules for ISP regulations panel — activated when working in this feature's directory"
+globs:
+  - "src/app/components/ISPRegulationsPanel.tsx"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/isp-regulations-panel.md`
+2. `/docs/features/_overview.md`
+
+Consult `Logic.md` (left panel routing, spotlight, recommendations, transitions).
+
+## Reusable Components
+
+From `/docs/features/isp-regulations-panel.md` — Dependencies on Shared Code:
+
+| Path | Description |
+|------|-------------|
+| `src/app/components/layerData.ts` | `layerMeta`, tiers, recommendations, spotlight-related helpers |
+| `src/app/components/flagComponents.tsx` | `getFlagForCountry` |
+| `src/app/components/CountryBrowser.tsx` | `CountryBrowser`, `CountryRow` |
+| `src/app/components/CountryDetailView.tsx` | Country analysis sub-view |
+| `src/imports/RightVpnFeatures.tsx` | `MapLayerOption` |
+| `src/imports/ProtonPrivacyScore.tsx`, `SurveillanceAlliances.tsx`, `IspRegulations.tsx`, `Identity.tsx`, `P2P.tsx` | Layer icons |
+
+If a shared component covers 80%+ of the requirement, extend it via props/config. Do NOT fork it. Do NOT create a parallel version.
+
+## Feature-Specific Constraints
+
+- Spotlight and risk UI depend on `MapLayerOption` × `LayerTier` — see `layerMeta` and `spotlightDescription` patterns in source.
+- Motion/transition behavior is part of UX contract (`Logic.md`).
+
+## Patterns to Follow
+
+- Local state for internal tabs/expanders; global selection via props from `App`.
+- Use `AnimatePresence` / `motion` consistently with existing sections.
+
+## What NOT to Do
+
+- Do NOT duplicate `CountryBrowser` / `CountryDetailView` or layer helpers — import from `src/app/components/`.
+- Do NOT modify files outside this feature’s scope without approval; coordinated changes need updates to `application-shell.md` and `world-map.md` if props change.
+- Do NOT add URL routes.
+- Do NOT change layer tier keys or recommendation rules without updating `/docs/features/isp-regulations-panel.md` and `layerData.ts` (see `shared-policies.mdc`).

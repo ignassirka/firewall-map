@@ -1,0 +1,48 @@
+---
+description: "Rules for Map chrome (Figma) — activated when working in this feature's directory"
+globs:
+  - "src/imports/ConnectionCardLeft.tsx"
+  - "src/imports/ConnectionDetails.tsx"
+  - "src/imports/RightVpnFeatures.tsx"
+  - "src/imports/MapLayers.tsx"
+  - "src/imports/StatusGradient.tsx"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/map-chrome.md`
+2. `/docs/features/_overview.md`
+
+Use `Design.md` for connection card, details bar, right panel, layers dropdown, status gradient sections.
+
+## Reusable Components
+
+From `/docs/features/map-chrome.md` — Dependencies on Shared Code:
+
+| Path | Description |
+|------|-------------|
+| `src/app/App.tsx` | `VpnStatus` type must match connection UI props |
+| `src/imports/profile-icons/*` and other assets | As each file imports |
+
+`RightVpnFeatures.tsx` / `MapLayers.tsx` define **`MapLayerOption`** used across `App`, `WorldMap`, and `layerData.ts`.
+
+If a shared component covers 80%+ of the requirement, extend it via props/config. Do NOT fork it. Do NOT create a parallel version.
+
+## Feature-Specific Constraints
+
+- Figma-generated files: prefer minimal, targeted edits; avoid reshaping entire components unnecessarily.
+- Adding a new `MapLayerOption` value requires coordinated updates to `App.tsx`, `layerData.ts`, `WorldMap.tsx`, and docs (`regulatory-data`, `map-chrome`).
+
+## Patterns to Follow
+
+- Default exports; inline styles for pixel-matched layout; props wired from `WorldMap.tsx`.
+
+## What NOT to Do
+
+- Do NOT duplicate `MapLayerOption` or layer lists — maintain a single definition in `RightVpnFeatures.tsx` / `MapLayers.tsx` per existing pattern.
+- Do NOT create a parallel `src/shared/` UI layer — this repo uses `src/imports/` for Figma chrome.
+- Do NOT add URL routes.
+- Do NOT change `MapLayerOption` or `VpnStatus` shapes without updating `/docs/features/map-chrome.md`, `application-shell.md`, and `layerData.ts` / `shared-policies.mdc` as applicable.

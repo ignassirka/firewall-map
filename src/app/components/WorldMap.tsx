@@ -144,6 +144,11 @@ function getPhysicalLocation(country: string): { lat: number; lng: number } {
   return marker ? { lat: marker.lat, lng: marker.lng } : DEFAULT_LOCATION;
 }
 
+export function getCountryCoords(country: string): { lat: number; lng: number } {
+  const marker = countryMarkers.find((c) => c.name === country);
+  return marker ? { lat: marker.lat, lng: marker.lng } : DEFAULT_LOCATION;
+}
+
 const USER_LOCATION_PIN_CSS = `
   @keyframes ulp-pulse {
     0%, 100% { transform: scale(0.96); }
@@ -344,6 +349,8 @@ interface WorldMapProps {
   physicalCountry: string;
   onPhysicalCountryChange: (country: string) => void;
   panelWidth: number;
+  firewallMode?: boolean;
+  onMapReady?: (map: L.Map) => void;
 }
 
 export function WorldMap({
@@ -358,6 +365,8 @@ export function WorldMap({
   physicalCountry,
   onPhysicalCountryChange,
   panelWidth,
+  firewallMode = false,
+  onMapReady,
 }: WorldMapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -463,6 +472,7 @@ export function WorldMap({
     L.control.attribution({ position: "bottomright", prefix: false }).addTo(map);
 
     mapRef.current = map;
+    onMapReady?.(map);
 
     requestAnimationFrame(() => {
       map.invalidateSize();
@@ -526,6 +536,16 @@ export function WorldMap({
       });
     });
   }, [onSelectCountry, onConnect, selectedMapLayer]);
+
+  // Hide country markers in firewall mode (keep user pin + VPN pin + arc lines)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    markersRef.current.forEach((marker) => {
+      if (firewallMode) marker.remove();
+      else marker.addTo(map);
+    });
+  }, [firewallMode]);
 
   // React to selectedCountry or selectedMapLayer changes – update icons & tooltips
   useEffect(() => {
@@ -698,7 +718,7 @@ export function WorldMap({
         </div>
       </div>
 
-      {/* VPN Features floating panel top-right + Map Layers — wrapper keeps hover while moving across the gap */}
+      {/* VPN Features floating panel top-right + Map Layers */}
       <div
         className="absolute top-[8px] right-[8px] z-[1000] pointer-events-auto"
         onMouseEnter={handleMapLayersRegionEnter}
@@ -726,7 +746,7 @@ export function WorldMap({
         </div>
       </div>
 
-      {/* Feature flyout — fixed overlay so it's above everything and aligned to the hovered row */}
+      {/* Feature flyout */}
       {hoveredFeature && flyoutPos && (
         <div
           className="pointer-events-auto"

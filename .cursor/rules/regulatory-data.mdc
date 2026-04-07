@@ -1,0 +1,41 @@
+---
+description: "Rules for Regulatory & country data — activated when working in this feature's directory"
+globs:
+  - "src/app/components/layerData.ts"
+  - "src/app/components/countryData.ts"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/regulatory-data.md`
+2. `/docs/features/_overview.md`
+
+Also read `.cursor/rules/shared-policies.mdc` — **human approval is required** before modifying these files.
+
+## Reusable Components
+
+From `/docs/features/regulatory-data.md` — Dependencies on Shared Code:
+
+| Path | Description |
+|------|-------------|
+| `src/imports/RightVpnFeatures.tsx` | `MapLayerOption` string union must match layer keys in `layerData.ts` |
+
+If a shared type covers 80%+ of the requirement, extend it via intersection or shared union — do NOT redeclare competing layer keys in feature files.
+
+## Feature-Specific Constraints
+
+- `LayerTier`: `"high" | "medium" | "low"`; layer metadata in `layerMeta` drives colors and copy.
+- `CountryData` records are keyed by country name strings consumed by `getCountryData()`.
+
+## Patterns to Follow
+
+- Pure functions; exported constants; no I/O.
+
+## What NOT to Do
+
+- Do NOT embed tier or country tables inside `WorldMap.tsx` or panel components — keep data here.
+- Do NOT add routes.
+- Do NOT change exported shapes or layer keys without updating `/docs/features/regulatory-data.md`, `Design.md` cross-references if needed, and **obtain human approval per `shared-policies.mdc`.**
