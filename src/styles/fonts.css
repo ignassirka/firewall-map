@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ─── Segoe UI Variable → Inter fallback aliases ──────────────────────────────
+ * Figma-imported components reference specific Segoe UI Variable optical-size
+ * variants as distinct font-family names (e.g. "Segoe UI Variable:Regular Small").
+ * On Windows these resolve to the real variable font; on macOS/Linux they fail
+ * and fall to the generic "sans-serif" which may render as a serif font.
+ *
+ * These @font-face rules make each variant resolve to the local Segoe UI Variable
+ * first (Windows), then Inter (loaded from Google Fonts) as the cross-platform fallback.
+ */
+
+/* Base name — used by ConnectionDetails, theme.css, etc. */
+@font-face {
+  font-family: 'Segoe UI Variable';
+  src: local('Segoe UI Variable'), local('Segoe UI'), local('Inter');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+/* :Regular Small — optical size 8, weight 400 */
+@font-face {
+  font-family: 'Segoe UI Variable:Regular Small';
+  src: local('Segoe UI Variable'), local('Segoe UI'), local('Inter');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+/* :Semibold Small — optical size 8, weight 600 */
+@font-face {
+  font-family: 'Segoe UI Variable:Semibold Small';
+  src: local('Segoe UI Variable'), local('Segoe UI'), local('Inter');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+/* :Regular (Text) — optical size 10.5, weight 400 */
+@font-face {
+  font-family: 'Segoe UI Variable:Regular';
+  src: local('Segoe UI Variable'), local('Segoe UI'), local('Inter');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+/* :Semibold Text — optical size 10.5, weight 600 */
+@font-face {
+  font-family: 'Segoe UI Variable:Semibold Text';
+  src: local('Segoe UI Variable'), local('Segoe UI'), local('Inter');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+/* :Semibold Display — optical size 36, weight 600 */
+@font-face {
+  font-family: 'Segoe UI Variable:Semibold Display';
+  src: local('Segoe UI Variable'), local('Segoe UI'), local('Inter');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+/* Right VPN panel + feature flyouts — use Segoe UI Variable with Inter fallback (see @font-face rules above) */
+.font-segoe-ui {
+  font-family: "Segoe UI Variable", "Segoe UI", Inter, system-ui, sans-serif;
+}
