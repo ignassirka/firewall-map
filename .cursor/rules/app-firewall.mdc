@@ -1,0 +1,71 @@
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/app-firewall.md`
+2. `/docs/features/_overview.md`
+
+## Architecture
+
+Overlay component at `src/app/components/AppFirewall.tsx`. Default export. Renders floating panels and Leaflet arc layers over the shared WorldMap. Does NOT render its own container or map — the Leaflet map is shared with the Privacy Map view via `firewallMode` prop on WorldMap.
+
+## Dependencies
+
+| Package / Module | Used for |
+|---|---|
+| `react` 18.3.1 | `useState`, `useEffect`, `useCallback`, `useRef` |
+| `clsx` 2.1.1 | Conditional class merging |
+| `leaflet` 1.9.x | `L.layerGroup`, `L.polyline`, `L.circleMarker`, `L.latLng` for map arcs |
+| `lucide-react` 0.487.0 | Shield, ShieldAlert, AlertTriangle, Check, X, Ban, Eye |
+| `src/imports/StatusGradient.tsx` | Top gradient overlay (reused Figma-exported component) |
+
+## Layout
+
+Overlay elements positioned over the shared Leaflet WorldMap:
+
+| Element | Position | Notes |
+|---|---|---|
+| StatusGradient | `absolute top-0`, full width, z-[600] | Same component as Privacy Map, vpnStatus="protected" |
+| Left Panel | `absolute top-[8px] left-[8px] bottom-[8px]`, z-[1000], w-[340px] | Glassmorphism panel with app list |
+| Right Panel | `absolute top-[8px] right-[8px]`, z-[1000], w-[240px] | Summary stats + review flow |
+| Notification Banner | `absolute top-[16px]`, z-[2000] | Centered between panels |
+| Bottom Stats Bar | `absolute bottom-0`, z-[1000] | Same gradient pattern as ConnectionDetails |
+| Detail Overlay | `absolute inset-0`, z-[3000] | Centered modal with glassmorphism |
+| Leaflet Arc Layers | Native Leaflet polylines in L.layerGroup | Auto-handle pan/zoom |
+
+## State
+
+| State | Purpose |
+|---|---|
+| `blockedApps` | Record of blocked app IDs → block type |
+| `dismissedApps` | Array of dismissed app IDs |
+| `selectedApp` | ID of app shown in detail overlay |
+| `showNotification` | Temu notification banner visibility |
+| `reviewMode` | Auto-advance through flagged apps |
+
+## Styling Conventions
+
+MUST match the Privacy Map exactly:
+
+- **Glassmorphism**: `backdrop-blur-[16px] bg-[rgba(22,20,28,0.75)] border border-[rgba(255,255,255,0.1)] rounded-[8px]`
+- **Colors**: `#2CFFCC` (green/safe), `#F7607B` (red/danger), `#FFAD33` (amber/warning)
+- **Text opacity levels**: `rgba(255,255,255,0.7)`, `rgba(255,255,255,0.5)`, `rgba(255,255,255,0.45)`, `rgba(255,255,255,0.4)`
+- **`fontSemibold` / `fontRegular`** CSS objects matching ISPRegulationsPanel convention
+- **`clsx`** for conditional class merging
+- **Bottom gradient**: `bg-gradient-to-t from-[#0f0d14] via-[rgba(15,13,20,0.85)] to-transparent`
+
+## Feature-Specific Constraints
+
+- Do NOT create a separate map or container — the Leaflet map is SHARED with the Privacy Map.
+- Do NOT use different colors or design language — STRICTLY reuse the Privacy Map palette.
+- Mock data is static constants at the file top; do not fetch from external sources.
+- Arc lines use native Leaflet polylines via quadratic Bézier interpolation — auto-handle pan/zoom.
+- The user location pin from WorldMap is hidden in firewall mode; AppFirewall adds its own device marker via L.circleMarker.
+
+## Integration
+
+`App.tsx` always renders WorldMap. When `showFirewall` is true:
+1. WorldMap receives `firewallMode={true}` → hides its own overlays, removes user pin
+2. WorldMap calls `onMapReady` with the Leaflet map instance
+3. AppFirewall receives `map` prop and renders overlay panels + adds Leaflet arc layers
+4. On unmount, AppFirewall's `useEffect` cleanup removes all added layers

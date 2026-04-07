@@ -1,0 +1,57 @@
+---
+description: "Prevents unreviewed changes to shared and critical code"
+globs: "*/*"
+alwaysApply: true
+---
+
+## Before modifying ANY file, check `/docs/protected-boundaries.md`
+
+### If the file is 🔴 Critical
+
+1. **STOP.** Do NOT modify.
+2. Output the full proposed diff.
+3. List every feature and file that imports or depends on this file (use the Dependency Map in `/docs/protected-boundaries.md`).
+4. Wait for explicit human approval before applying.
+
+🔴 Critical files (quick reference — see `/docs/protected-boundaries.md` for full details):
+
+- `src/app/App.tsx` — global state owner, `VpnStatus` type
+- `src/imports/RightVpnFeatures.tsx` — `MapLayerOption`, `VpnFeatureType` types
+- `src/app/components/layerData.ts` — layer tier system (3 features depend on it)
+- `src/app/components/flagComponents.tsx` — flag utilities (5 files depend on it)
+- `src/app/components/ui/utils.ts` — `cn()` utility (~43 shadcn files depend on it)
+- `src/styles/theme.css` — CSS tokens for entire app
+- `src/styles/tailwind.css` — Tailwind v4 entry
+- `src/styles/fonts.css` — font stack aliases
+- `src/styles/index.css` — master CSS import chain
+- `vite.config.ts` — build configuration
+- `index.html` — SPA entry
+- `package.json` — dependencies and scripts
+
+### If the file is 🟡 Cautious
+
+1. Check the **"Safe Changes"** column in `/docs/protected-boundaries.md` — if your change qualifies (e.g. adding a new country entry to `countryData.ts` following existing shape), proceed.
+2. If your change falls under **"Unsafe Changes"** (e.g. changing `CountryData` interface fields, renaming exports, altering props), treat it as 🔴 Critical: stop, output diff, list dependents, wait for approval.
+3. After any modification to a 🟡 file, output: `⚠️ Modified cautious file [path] — [what changed] — affects: [list features]`
+
+🟡 Cautious files (quick reference):
+
+- `src/app/components/countryData.ts`
+- `src/app/components/ISPRegulationsPanel.tsx`
+- `src/app/components/CountryBrowser.tsx`
+- `src/app/components/CountryDetailView.tsx`
+- `src/imports/MapLayers.tsx`, `ConnectionCardLeft.tsx`, `ConnectionDetails.tsx`, `StatusGradient.tsx`
+- `src/app/components/ui/use-mobile.ts`
+- `postcss.config.mjs`
+
+### If the file is not listed
+
+Proceed normally. Standard feature-scoped development rules from `global.mdc` apply.
+
+## Updating the boundaries
+
+If you create a new shared component, hook, utility, or type that is imported by **2+ features**, add it to `/docs/protected-boundaries.md` at the appropriate protection level:
+
+- 🔴 if it defines types or interfaces consumed across 3+ features
+- 🟡 if it is consumed by 2 features and can be safely extended
+- Update the Dependency Map section with the traced import chain

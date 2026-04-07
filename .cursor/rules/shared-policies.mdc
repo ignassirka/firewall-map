@@ -1,0 +1,54 @@
+---
+description: "Shared regulatory datasets — human approval required before changes"
+globs:
+  - "src/app/components/layerData.ts"
+  - "src/app/components/countryData.ts"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/regulatory-data.md`
+2. `/docs/features/_overview.md`
+
+Cross-check `Design.md` (Country & Layer Data) and `Logic.md` (map layer system, recommendations).
+
+This rule applies to the **shared regulatory / tier datasets** (there is no separate `src/shared/policies/` folder in this repo). These two files are the canonical “policy” data for map layers and country copy.
+
+## Human approval required
+
+**Do not modify `layerData.ts` or `countryData.ts` without explicit human approval** — including: new layers, new tier keys, renamed `MapLayerOption` alignment, changed `CountryData` shape, bulk country additions/removals, or recommendation/spotlight logic that affects multiple screens.
+
+After approval, update `/docs/features/regulatory-data.md` and any affected feature docs in the same change.
+
+## Features that depend on this “policy system”
+
+| Feature | Doc | Why it depends |
+|---------|-----|----------------|
+| World map | `/docs/features/world-map.md` | Choropleth tiers, colors, markers |
+| ISP regulations panel | `/docs/features/isp-regulations-panel.md` | Spotlight, tiers, recommendations |
+| Country detail view | `/docs/features/country-detail-view.md` | `getCountryData` copy and structure |
+| Country browser | `/docs/features/country-browser.md` | Indirect (selection flows; layer alignment) |
+| Map chrome | `/docs/features/map-chrome.md` | `MapLayerOption` must match layer keys |
+| Application shell | `/docs/features/application-shell.md` | Global `selectedMapLayer` type |
+
+## Reusable Components
+
+Not applicable — data modules only. Consumers import functions/constants; do not duplicate tiers or country records in feature files.
+
+## Feature-Specific Constraints
+
+- `MapLayerOption` in `RightVpnFeatures.tsx` must remain consistent with layer keys in `layerData.ts`.
+- Tier union: `"high" | "medium" | "low"` (`LayerTier`) — changing enums requires full-app pass.
+
+## Patterns to Follow
+
+- Pure functions; no network I/O; extend via new exports and documented keys.
+
+## What NOT to Do
+
+- Do NOT fork tier or country data into feature components — always import from these modules.
+- Do NOT change data shapes silently — update docs and all listed dependent features.
+- Do NOT add routes.

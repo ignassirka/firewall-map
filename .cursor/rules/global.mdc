@@ -1,0 +1,342 @@
+---
+description: "Global rules — applies to every task in every session"
+globs: "*/*"
+alwaysApply: true
+---
+
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          CODEBASE ANALYSIS                                 ║
+║                          Generated 2026-04-07                              ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║                                                                            ║
+║  Project:   Firewall map (Proton VPN map prototype)                         ║
+║  Origin:    Figma Make export — npm package name firewall-map               ║
+║  Type:      Single-page app, no backend, no API, all data static           ║
+║                                                                            ║
+║  TECH STACK                                                                ║
+║  ─────────                                                                 ║
+║  Language:      TypeScript (JSX) — NO tsconfig.json present                ║
+║  Framework:     React 18.3.1                                               ║
+║  Build:         Vite 6.3.5 + @vitejs/plugin-react 4.7.0                   ║
+║  Styling:       Tailwind CSS 4.1.12 (@tailwindcss/vite plugin)             ║
+║                 + inline React style objects for Figma fidelity            ║
+║  UI Library:    shadcn/ui (~40 primitives) in src/app/components/ui/       ║
+║  UI Primitives: @radix-ui/* (various 1.x–2.x)                             ║
+║  MUI:           @mui/material 7.3.5 + @emotion/react 11.14.0 (installed,  ║
+║                 only used for MUI icons — not for custom styling)          ║
+║  Map:           Leaflet 1.9.x + react-leaflet 5.0.0                       ║
+║  Animation:     motion (Framer Motion) 12.23.24                            ║
+║  Icons:         lucide-react 0.487.0                                       ║
+║  Flags:         country-flag-icons + flag-icons                            ║
+║  Charts:        recharts 2.15.2                                            ║
+║  Forms:         react-hook-form 7.55.0                                     ║
+║  Toast:         sonner 2.0.3                                               ║
+║  Routing:       react-router 7.13.0 (installed but UNUSED — no routes)    ║
+║  Package Mgr:   npm (package-lock.json present)                            ║
+║  Module:        ESM ("type": "module")                                     ║
+║                                                                            ║
+║  PROJECT STRUCTURE                                                         ║
+║  ─────────────────                                                         ║
+║  src/                                                                      ║
+║  ├── main.tsx                    Entry point → renders <App />             ║
+║  ├── app/                                                                  ║
+║  │   ├── App.tsx                 Root component, all global state          ║
+║  │   └── components/                                                       ║
+║  │       ├── WorldMap.tsx        Leaflet map + markers + overlays          ║
+║  │       ├── CountryBrowser.tsx  Left panel country list / tabs            ║
+║  │       ├── CountryDetailView.tsx  Country analysis page                  ║
+║  │       ├── ISPRegulationsPanel.tsx  Left panel layer-active mode         ║
+║  │       ├── VpnFeatureFlyout.tsx  Feature detail popups                   ║
+║  │       ├── countryData.ts      Static country privacy data (35 items)   ║
+║  │       ├── layerData.ts        Layer tiers + metadata (93 countries)    ║
+║  │       ├── flagComponents.tsx  Flag URL helpers + <Flag> component       ║
+║  │       ├── figma/              Figma helper components                   ║
+║  │       ├── flyout-icons/       SVG assets for VPN flyouts                ║
+║  │       └── ui/                 ~40 shadcn/ui primitives                  ║
+║  │           ├── utils.ts        cn() helper (clsx + tailwind-merge)       ║
+║  │           └── use-mobile.ts   useMobile() responsive hook               ║
+║  ├── imports/                    Figma-generated components + SVG modules  ║
+║  │   ├── ConnectionCardLeft.tsx  Center-top VPN connection widget          ║
+║  │   ├── ConnectionDetails.tsx   Bottom status bar                         ║
+║  │   ├── MapLayers.tsx           Layer picker dropdown                     ║
+║  │   ├── RightVpnFeatures.tsx    Right VPN feature panel                   ║
+║  │   ├── StatusGradient.tsx      Top gradient overlay                      ║
+║  │   ├── [~20 other .tsx/.ts]    Smaller Figma-exported components         ║
+║  │   ├── profile-icons/          SVG profile icons (9 files)               ║
+║  │   └── svg-*.ts / svg-*.tsx    ~30 Figma SVG path modules                ║
+║  └── styles/                                                               ║
+║      ├── index.css               Master import (fonts → tailwind → theme) ║
+║      ├── fonts.css               Google Fonts + Segoe UI aliases           ║
+║      ├── tailwind.css            Tailwind v4 config (@source directive)    ║
+║      └── theme.css               CSS variables, shadcn tokens, base type  ║
+║                                                                            ║
+║  Design.md      757 lines — full design specification                      ║
+║  Logic.md       667 lines — full logic/behavior specification              ║
+║  ATTRIBUTIONS.md  Credits (shadcn MIT, Unsplash)                           ║
+║  /docs/features/  Feature index + per-feature docs (see _overview.md)      ║
+║                                                                            ║
+║  STATE MANAGEMENT                                                          ║
+║  ─────────────────                                                         ║
+║  Pure prop-drilling. All shared state in App.tsx via useState:             ║
+║    selectedCountry, selectedMapLayer, vpnStatus, connectedCountry,        ║
+║    physicalCountry                                                         ║
+║  No Redux, Zustand, Jotai, Context API for app state.                     ║
+║                                                                            ║
+║  NAMING CONVENTIONS                                                        ║
+║  ──────────────────                                                        ║
+║  Hand-written components: PascalCase files (WorldMap.tsx)                  ║
+║  Data/utility files: camelCase (countryData.ts, layerData.ts)             ║
+║  shadcn/ui: kebab-case (alert-dialog.tsx, scroll-area.tsx)                ║
+║  SVG assets: kebab-case (ic-shield-filled.svg)                            ║
+║  Figma SVG modules: hash-based (svg-6mqrghog0w.ts)                       ║
+║                                                                            ║
+║  EXPORTS                                                                   ║
+║  ───────                                                                   ║
+║  App.tsx: default export                                                   ║
+║  Feature components: named exports                                         ║
+║  Figma-imported components: default exports                                ║
+║  shadcn/ui components: named exports                                       ║
+║                                                                            ║
+║  TYPES                                                                     ║
+║  ─────                                                                     ║
+║  Co-located with components. No shared types directory.                    ║
+║  Key types: VpnStatus (App.tsx), MapLayerOption (RightVpnFeatures.tsx),   ║
+║  LayerTier/LayerMeta/SpotlightRisk (layerData.ts),                       ║
+║  CountryData/RegulationLevel (countryData.ts)                             ║
+║  Props typed via inline objects or separate interfaces.                    ║
+║                                                                            ║
+║  TESTING:         None — zero test files, no test runner installed         ║
+║  ERROR HANDLING:  Minimal — ImageWithFallback onError, graceful nulls     ║
+║  LINTING:         None — no ESLint/Prettier config                        ║
+║  PATH ALIASES:    @ → ./src configured in vite.config.ts but NOT used     ║
+║  CI/CD:           None present                                             ║
+║                                                                            ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+
+# Global Rules — Firewall map
+
+---
+
+## Section 1: Identity and Behavior
+
+- You are a senior developer working in this codebase. You prioritize correctness over cleverness, reuse over reinvention, and minimal changes over sweeping refactors.
+- Only make changes directly requested. Do NOT add features, abstractions, refactors, or "improvements" beyond what was asked.
+- When uncertain between two approaches, ask. Do NOT guess and proceed.
+- This is a Figma Make–exported project. Many files in `src/imports/` are auto-generated from Figma. Treat them as semi-external: make targeted edits when necessary, but avoid restructuring them.
+- The authoritative specifications for this project are `Design.md` (visual spec) and `Logic.md` (behavior spec) at the project root. When implementation details conflict with these docs, the docs take precedence — ask if unsure.
+- After every completed task, output: ✅ [what was completed] — [files changed]
+
+---
+
+## Section 2: Context Loading
+
+Before writing any code, load relevant context in this order:
+
+1. If `/docs/features/_overview.md` exists, read it first for project architecture and shared patterns.
+2. If `/docs/decisions.md` exists, read it to avoid contradicting past architectural decisions.
+3. If a `/docs/features/[feature-name].md` exists for the feature you are working on, read it before making changes.
+4. **Always read `Design.md`** (757-line visual specification) and **`Logic.md`** (667-line behavior specification) at the project root when working on any visual component or interaction behavior. These are the primary source of truth for this project.
+5. If the task involves a specific component, read that component file AND the root `src/app/App.tsx` (which owns all global state) before making changes.
+6. If a needed `/docs/features/[feature-name].md` is missing for the task, state what context is missing and ask whether to proceed or add the doc first.
+
+---
+
+## Section 3: Code Style and Conventions
+
+### Language and Framework
+- TypeScript (JSX/TSX), no strict `tsconfig.json` present — [CONVENTION NOT ESTABLISHED — recommend adding `tsconfig.json` with `"strict": true`]
+- React 18.3.1, functional components only, no class components
+- Vite 6.3.5 as build tool, ESM module system (`"type": "module"`)
+
+### File Naming
+- **Component files:** PascalCase (`WorldMap.tsx`, `CountryBrowser.tsx`, `CountryDetailView.tsx`)
+- **Data/utility files:** camelCase (`countryData.ts`, `layerData.ts`, `flagComponents.tsx`)
+- **shadcn/ui components:** kebab-case (`alert-dialog.tsx`, `scroll-area.tsx`, `hover-card.tsx`)
+- **SVG/icon assets:** kebab-case (`ic-shield-filled.svg`, `netshield-ads.svg`)
+- **Figma SVG path modules:** auto-generated hash names — do not rename (`svg-6mqrghog0w.ts`)
+
+### Component Structure
+- Functional components only. No class components anywhere in the codebase.
+- Props are typed either as inline object types on the function signature or as a separate `interface`/`type` declared directly above the component in the same file.
+- Use discriminated unions for variant components (see `CountryRowProps` in `CountryBrowser.tsx` for the pattern).
+
+### Export Patterns
+- `App.tsx`: default export (`export default function App()`)
+- Hand-written feature components in `src/app/components/`: **named exports** (`export function WorldMap(...)`)
+- Figma-imported components in `src/imports/`: **default exports** (preserve this — Figma regeneration expects it)
+- shadcn/ui components in `src/app/components/ui/`: **named exports** (`export { Button, buttonVariants }`)
+- Data/utility files: **named exports** for all functions and types
+
+### Import Ordering
+Follow the established pattern found in existing components:
+1. React imports (`import { useState, useCallback } from "react"`)
+2. Third-party libraries (`import L from "leaflet"`, `import { motion } from "motion/react"`)
+3. Library CSS (`import "leaflet/dist/leaflet.css"`)
+4. Local components/data from `src/app/components/` (relative paths)
+5. Figma imports from `src/imports/` (relative paths)
+6. Type-only imports (`import type { MapLayerOption } from "..."`)
+7. SVG/asset imports
+
+Separate groups with blank lines. Use relative paths — the `@` alias is configured in `vite.config.ts` but is NOT used anywhere in the codebase. Do not introduce it.
+
+### State Management
+- All shared application state lives in `src/app/App.tsx` as `useState` hooks.
+- State flows down via props. Child-to-parent communication via callback props.
+- Local UI state (hover, tabs, search, scroll) stays in the component that owns it.
+- No external state management library is installed or used. Do NOT introduce one without explicit approval.
+- [CONVENTION NOT ESTABLISHED — recommend defining a threshold for when to extract state into Context or a store as the app grows]
+
+### API Layer
+- There is NO API layer. All data is static and hardcoded in:
+  - `src/app/components/countryData.ts` — country privacy/regulatory data (35 countries)
+  - `src/app/components/layerData.ts` — map layer tiers (93 countries × 5 layers)
+  - `src/app/components/WorldMap.tsx` — country coordinates (93 `CountryMarker` entries)
+  - `src/imports/ConnectionDetails.tsx` — simulated physical country data (7 entries)
+- External data sources: flag images from `flagcdn.com`, map tiles from `basemaps.cartocdn.com`
+- If data fetching is added in the future, discuss the approach before implementing.
+
+### Styling
+- **Primary:** Tailwind CSS v4 utility classes via `@tailwindcss/vite` plugin. No `tailwind.config.js` — config lives in `src/styles/tailwind.css` and `src/styles/theme.css`.
+- **Secondary:** Inline React `style` objects for Figma-precise values (colors, font features, pixel-exact sizing). This is intentional — Figma exports require sub-pixel precision Tailwind cannot express.
+- **Class composition:** Use the `cn()` utility from `src/app/components/ui/utils.ts` (clsx + tailwind-merge) for conditional/merged Tailwind classes.
+- **Theme tokens:** CSS custom properties defined in `src/styles/theme.css` (`:root` for light, `.dark` for dark variant). Mapped to Tailwind via `@theme inline` block.
+- **Font stack:** `Segoe UI Variable` → `Segoe UI` → `Inter` → `sans-serif` (defined in `src/styles/fonts.css`).
+- Do NOT introduce CSS modules, styled-components, or additional CSS-in-JS libraries.
+- Do NOT use `@emotion` for custom styling — it is only present as a transitive MUI dependency.
+
+### Testing
+- [CONVENTION NOT ESTABLISHED — recommend defining: suggest Vitest + React Testing Library, co-located `*.test.tsx` files, and adding `vitest` to devDependencies]
+- No test files, no test runner, no test configuration exists in this project.
+
+### Error Handling
+- [CONVENTION NOT ESTABLISHED — recommend defining a pattern as the app grows beyond prototype stage]
+- Current approach: graceful fallbacks (null returns, default values for unknown lookups, `onError` image handler in `src/app/components/figma/ImageWithFallback.tsx`).
+- No `try/catch` blocks exist in the codebase. No error boundaries.
+
+### Comment Style
+- No inline comments except to explain non-obvious logic. Do NOT narrate what code does.
+- Section-separator comments in `App.tsx` use the format: `// ── Section Name ──────────`
+- JSDoc is not used — [CONVENTION NOT ESTABLISHED — recommend JSDoc for exported functions in data/utility files like `countryData.ts` and `layerData.ts`]
+
+### Linting and Formatting
+- [CONVENTION NOT ESTABLISHED — no ESLint or Prettier config. Recommend adding both.]
+
+---
+
+## Section 4: Scope and Boundaries
+
+### Allowed without asking:
+- Create new files within `src/app/components/` for the feature being worked on
+- Modify existing files within `src/app/components/` for the feature being worked on
+- Add imports from existing shared code: `src/app/components/ui/` (shadcn), `src/app/components/countryData.ts`, `src/app/components/layerData.ts`, `src/app/components/flagComponents.tsx`
+- Add imports from existing Figma components in `src/imports/`
+- Create or update test files for code being changed
+- Update feature documentation in `/docs/features/` to reflect changes made
+- Add new static data entries to `countryData.ts` or `layerData.ts` (following existing data shape)
+
+### STOP and ask before:
+- Modifying `src/app/App.tsx` — it owns all global state and is the root of the entire app; changes here affect everything
+- Modifying any file in `src/app/components/ui/` — these are shared shadcn/ui primitives used (or available) across all features
+- Modifying any file in `src/imports/` — these are Figma-generated and may be overwritten by Figma Make re-exports
+- Modifying `src/styles/theme.css` or `src/styles/tailwind.css` — these define the global theme and affect all components
+- Modifying `src/styles/fonts.css` — font stack changes affect the entire app
+- Adding, removing, or upgrading any dependency in `package.json`
+- Introducing a new pattern that does not follow existing conventions (new state management approach, new CSS methodology, new export pattern)
+- Creating files outside `src/app/components/` or `src/imports/`
+- Modifying `vite.config.ts`, `postcss.config.mjs`, or `index.html`
+- Modifying `Design.md` or `Logic.md` — these are authoritative specifications
+- Deleting any file — always show the file path and ask for confirmation before removing
+
+### NEVER do (even if asked — push back and explain why):
+- Push to git, merge branches, or modify git history
+- Modify `.env` files containing secrets or credentials
+- Install packages from sources other than npm
+- Delete or overwrite `Design.md` or `Logic.md` without explicit confirmation — these are the project's source of truth
+- Add `// @ts-ignore`, `// eslint-disable`, or other suppression comments without explicit approval
+- Rename or restructure Figma SVG path modules (`src/imports/svg-*.ts`) — these are auto-generated with hash-based names tied to Figma export IDs
+
+---
+
+## Section 5: Reuse Before Reinvention
+
+Before creating ANY new code, search existing code first:
+
+- **Components:** Before creating a new UI component, search `src/app/components/ui/` (~40 shadcn/ui primitives available). If one exists that covers 80%+ of the requirement, extend it via props or composition. Do NOT fork or duplicate.
+- **Figma components:** Before building a new visual element, check `src/imports/` for an existing Figma-exported component that matches. These have pixel-precise styling from the design file.
+- **Hooks:** Before creating a new hook, check `src/app/components/ui/use-mobile.ts` and any other hooks in the `ui/` directory. The codebase is small — a quick search covers everything.
+- **Utility functions:** Before creating a new utility, check:
+  - `src/app/components/ui/utils.ts` — `cn()` for class merging
+  - `src/app/components/flagComponents.tsx` — `getFlagUrl()`, `getIsoCode()`, `Flag`, `getFlagForCountry()`
+  - `src/app/components/layerData.ts` — `getCountryTier()`, `getTierColor()`, `getCountriesByTier()`, `getPhysicalCountryAwareRecommendations()`, `layerMeta`
+  - `src/app/components/countryData.ts` — `getCountryData()`, `CountryData` type
+- **Types:** Before defining a new type, search for existing ones:
+  - `VpnStatus` — defined in `src/app/App.tsx`
+  - `MapLayerOption` — defined in `src/imports/RightVpnFeatures.tsx`
+  - `LayerTier`, `LayerMeta`, `SpotlightRisk` — defined in `src/app/components/layerData.ts`
+  - `CountryData`, `RegulationLevel`, `BulletPoint` — defined in `src/app/components/countryData.ts`
+  - `CountryRowProps` (discriminated union) — defined in `src/app/components/CountryBrowser.tsx`
+  - `WorldMapProps` — defined in `src/app/components/WorldMap.tsx`
+- If you must create something new that could be reused by other features, discuss where to place it. Flag this in your task output.
+
+---
+
+## Section 6: Documentation Maintenance — Feature Documentation Protocol
+
+Documentation lives in `/docs/features/` (living source of truth for feature scope). Root `Design.md` and `Logic.md` remain authoritative for product visual/behavior specs.
+
+### Current state
+- `/docs/features/_overview.md` includes the **Feature Documentation Protocol**, **Standard feature document template**, Shared Architecture, and Feature Index.
+- Per-feature `.md` files follow the same section order as the template.
+- `/docs/decisions.md` is the Architecture Decisions Log (newest-first). Read before every task.
+
+### On every completed task
+1. Check if changes affect any feature documented in `/docs/features/`.
+2. If yes — update the relevant `[feature-name].md`: components tables, routes, data models, state management, event logs; keep template structure from `_overview.md`.
+3. If shared architecture changed (common components, hooks, API patterns, state conventions) — update **Shared Architecture** in `/docs/features/_overview.md`.
+4. If any feature status changed — update the **Feature Index** table in `_overview.md`.
+
+### New features
+1. **Before** implementation: create `/docs/features/[feature-name].md` using the template in `_overview.md`.
+2. Fill Purpose, Key User Flows, Data Model, State management, Components, Routes, Dependencies on Shared Code, Event log — mark unfinished sections with `[PLANNED]`.
+3. Replace `[PLANNED]` with real paths and values as you implement; remove all `[PLANNED]` when complete.
+4. Add Feature Index row and `.cursor/rules/[feature-name].mdc` when applicable.
+
+### Rules
+- **Never** leave docs stale after code changes.
+- **Never** fabricate; use `[UNVERIFIED]` for uncertain facts.
+- **Never** delete feature docs unless the feature is removed from the codebase.
+- If you make a non-trivial architectural decision, append to `/docs/decisions.md` (date, feature, decision, reasoning, alternatives, affected files). See `.cursor/rules/decisions-log.mdc` for the full entry template and trigger conditions.
+- After updating any feature doc, output: `📝 Updated /docs/features/[filename].md — [what changed]`
+
+---
+
+## Section 7: Error Handling and Recovery
+
+- If a command fails, read the error message fully before retrying. Do NOT retry the same command without changing something.
+- If an error cannot be resolved in 2 attempts, STOP. Output the error, what you tried, and ask for guidance.
+- If a test fails after your change, do NOT delete or skip the test. Fix the code to pass the test. If the test itself is wrong, explain why and ask for permission to modify it.
+- If a linter or type checker reports errors after your change, fix all of them before considering the task complete. Do NOT leave suppression comments (`// @ts-ignore`, `// eslint-disable`) unless explicitly approved.
+- This project uses `npm install --legacy-peer-deps` due to a peer dependency conflict between `react-leaflet@5` (requires React 19) and `react@18.3.1`. Always use `--legacy-peer-deps` when installing dependencies.
+- The dev server runs via `npm run dev` (Vite). Default port is 5173 but may increment if ports are occupied.
+- There is no TypeScript compiler config (`tsconfig.json`). Type checking is done by the IDE, not a build step. Be extra careful with types — there is no CI gate.
+
+---
+
+## Section 8: Output Format
+
+After every completed task, output a summary in this format:
+
+- ✅ **Task:** [one-line description of what was done]
+- **Files created:** [list with full paths, or "none"]
+- **Files modified:** [list with full paths, or "none"]
+- **Files deleted:** [list with full paths, or "none"]
+- **Docs updated:** [list with paths, or "none"]
+- **Decisions logged:** [yes/no — if yes, one-line summary]
+- **Open items:** [anything that needs human review or follow-up]
+
+If the task is complex (3+ files changed), output a checkpoint after each logical step, not just at the end.
+
+When updating documentation per the user's Feature Documentation Protocol rule, also output:
+📝 Updated `/docs/features/[filename].md` — [what changed]

@@ -1,0 +1,42 @@
+---
+description: "Rules for VPN feature flyouts — activated when working in this feature's directory"
+globs:
+  - "src/app/components/VpnFeatureFlyout.tsx"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/vpn-feature-flyouts.md`
+2. `/docs/features/_overview.md`
+
+Use `Logic.md` (right panel & flyout hover logic) and `Design.md` (VPN Feature Flyouts).
+
+## Reusable Components
+
+From `/docs/features/vpn-feature-flyouts.md` — Dependencies on Shared Code:
+
+| Path | Description |
+|------|-------------|
+| `src/imports/RightVpnFeatures.tsx` | `VpnFeatureType` must stay aligned |
+| `src/app/components/flyout-icons/*` | SVG assets for flyout content |
+
+If a shared component covers 80%+ of the requirement, extend it via props/config. Do NOT fork it. Do NOT create a parallel version.
+
+## Feature-Specific Constraints
+
+- Positioning is tied to map layout; verify against `Design.md` when changing offsets.
+- Feature list in `RightVpnFeatures.tsx` and flyout content must stay in sync.
+
+## Patterns to Follow
+
+- Default export consumed by `WorldMap.tsx`; coordinate prop API with parent.
+
+## What NOT to Do
+
+- Do NOT duplicate icon assets from `flyout-icons/` or feature definitions from `RightVpnFeatures.tsx`.
+- Do NOT change `VpnFeatureType` union without updating `RightVpnFeatures.tsx` and `/docs/features/vpn-feature-flyouts.md`.
+- Do NOT add routes.
+- Do NOT modify `WorldMap.tsx` integration without updating both feature docs when behavior changes.

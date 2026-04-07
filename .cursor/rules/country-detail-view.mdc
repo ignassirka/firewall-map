@@ -1,0 +1,43 @@
+---
+description: "Rules for Country detail view — activated when working in this feature's directory"
+globs:
+  - "src/app/components/CountryDetailView.tsx"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/country-detail-view.md`
+2. `/docs/features/_overview.md`
+
+Use `Design.md` (Country Detail View) for layout and tokens.
+
+## Reusable Components
+
+From `/docs/features/country-detail-view.md` — Dependencies on Shared Code:
+
+| Path | Description |
+|------|-------------|
+| `src/app/components/countryData.ts` | `getCountryData`, `CountryData`, regulation types |
+| `src/app/components/flagComponents.tsx` | Large flag display |
+| `src/imports/RightVpnFeatures.tsx` | `MapLayerOption` for layer-aware UI |
+
+If a shared component covers 80%+ of the requirement, extend it via props/config. Do NOT fork it. Do NOT create a parallel version.
+
+## Feature-Specific Constraints
+
+- Only countries defined in `countryData.ts` have full detail content; preserve fallback behavior for unknown names.
+- Regulatory copy is static demo content, not legal advice.
+
+## Patterns to Follow
+
+- Presentation component: `countryName`, `onBack`, `activeLayer` from parent — no global state.
+
+## What NOT to Do
+
+- Do NOT fork `getCountryData` or duplicate `CountryData` shape — extend `countryData.ts` (requires `shared-policies.mdc` approval for data shape changes).
+- Do NOT modify parent routing in `ISPRegulationsPanel.tsx` without coordination.
+- Do NOT add routes.
+- Do NOT change `CountryData` fields without updating `/docs/features/country-detail-view.md` and `countryData.ts` first.

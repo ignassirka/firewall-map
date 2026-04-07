@@ -1,0 +1,45 @@
+---
+description: "Rules for World map — activated when working in this feature's directory"
+globs:
+  - "src/app/components/WorldMap.tsx"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/world-map.md`
+2. `/docs/features/_overview.md`
+
+Use `Design.md` (World Map section) and `Logic.md` (map markers, layers, flyouts) for interaction detail.
+
+## Reusable Components
+
+From `/docs/features/world-map.md` — Dependencies on Shared Code:
+
+| Path | Description |
+|------|-------------|
+| `src/app/components/layerData.ts` | Country tier per layer, tier colors, metadata |
+| `src/app/components/flagComponents.tsx` | Flag helpers for map/UI |
+| `src/imports/RightVpnFeatures.tsx` | `MapLayerOption`, `VpnFeatureType` |
+| `src/app/components/ui/*` | shadcn primitives if used |
+
+If a shared component covers 80%+ of the requirement, extend it via props/config. Do NOT fork it. Do NOT create a parallel version.
+
+## Feature-Specific Constraints
+
+- Marker list and coordinates are defined in `WorldMap.tsx`; keep in sync with `layerData` country coverage where applicable.
+- Basemap/tile URL and Leaflet integration must remain functional; follow `Logic.md` for marker click behavior.
+- Changing layer keys requires alignment with `layerData.ts` and `MapLayerOption`.
+
+## Patterns to Follow
+
+- Stateless w.r.t. global truth: receive all state from `App` via props; emit changes via callbacks only.
+
+## What NOT to Do
+
+- Do NOT duplicate data or helpers from `layerData.ts`, `flagComponents.tsx`, or Figma `imports` — import and compose.
+- Do NOT modify `App.tsx` or other features without explicit approval and doc updates.
+- Do NOT add routes — none are defined for this feature.
+- Do NOT change tier/layer semantics without updating `/docs/features/world-map.md` and `regulatory-data.md` / `layerData.ts` first.

@@ -1,7 +1,7 @@
 
-  # Mona Lisa privacy map
+  # Firewall map
 
-  This is a code bundle for Mona Lisa privacy map. The original project is available at https://www.figma.com/design/kjCaFaFZBhr7QnqFZTAzcj/Mona-Lisa-privacy-map.
+  This is a code bundle for Firewall map. The original Figma design is available at https://www.figma.com/design/kjCaFaFZBhr7QnqFZTAzcj/Mona-Lisa-privacy-map.
 
   ## Running the code
 

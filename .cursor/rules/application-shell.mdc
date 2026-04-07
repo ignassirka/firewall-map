@@ -1,0 +1,43 @@
+---
+description: "Rules for Application shell — activated when working in this feature's directory"
+globs:
+  - "src/app/App.tsx"
+alwaysApply: false
+---
+
+## Source of Truth
+
+Before ANY change, read:
+
+1. `/docs/features/application-shell.md`
+2. `/docs/features/_overview.md`
+
+For global behavior and state contracts, also consult `Logic.md` (state management, VPN lifecycle) at the project root.
+
+## Reusable Components
+
+From `/docs/features/application-shell.md` — Dependencies on Shared Code:
+
+| Path | Description |
+|------|-------------|
+| `src/imports/RightVpnFeatures.tsx` | Exports `MapLayerOption` used for `selectedMapLayer` state |
+
+If a shared component covers 80%+ of the requirement, extend it via props/config. Do NOT fork it. Do NOT create a parallel version.
+
+## Feature-Specific Constraints
+
+- Sole owner of global state: `selectedCountry`, `selectedMapLayer`, `vpnStatus`, `connectedCountry`, `physicalCountry`, `panelWidth` (see feature doc table).
+- Connect flow: 3s timer to `protected`; clear timer on disconnect or new connect (`Logic.md`).
+- No duplicate copies of `selectedCountry` in children — single source of truth in `App`.
+
+## Patterns to Follow
+
+- Prop drilling only; `useCallback` / `useRef` for handlers and connect timer.
+- Panel resize: pointer events on document, width clamped 200–400px.
+
+## What NOT to Do
+
+- Do NOT duplicate shared utilities or UI that already lives in `src/app/components/ui/`, `src/app/components/layerData.ts`, `countryData.ts`, or `src/imports/` — extend or import instead. (This repo has no `src/shared/` directory.)
+- Do NOT modify files outside `src/app/App.tsx` without following `/docs/features/_overview.md` and getting explicit approval for cross-feature changes.
+- Do NOT add URL routes — none are defined; the app is a single-page shell (`_overview.md`).
+- Do NOT change global state field names or meanings without updating `/docs/features/application-shell.md`, `Logic.md`, and all consumers listed in `_overview.md`.

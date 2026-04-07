@@ -1,0 +1,43 @@
+---
+description: "Enforces architectural decision logging"
+globs: "*/*"
+alwaysApply: true
+---
+
+## When to log
+
+Append a new entry to `/docs/decisions.md` when ANY of these occur:
+
+- A new shared component, hook, or utility is created in `src/app/components/ui/`, `src/app/components/`, or `src/imports/`
+- A data model shape is defined or changed (`CountryData`, `LayerTier`, `MapLayerOption`, `VpnStatus`, `CountryRowProps`, etc.)
+- A state management pattern is chosen for a feature (new `useState` in `App.tsx`, new Context, new store)
+- An API convention is established or modified (currently none — static data only)
+- A dependency is added or removed in `package.json`
+- Two valid approaches exist and one is chosen over the other
+- A component is forked instead of extended (always log why)
+
+## How to log
+
+Use this exact format. Insert the new entry at the **top** of the log, directly below the "How to Read This Log" section. Always include all six fields.
+
+```
+---
+
+**Date:** YYYY-MM-DD
+**Feature:** [feature name or "Shared"]
+**Decision:** [one sentence — what was decided]
+**Reasoning:** [why this approach was chosen]
+**Alternatives rejected:** [list with one-line reasons]
+**Affects:** [files, components, or features impacted]
+```
+
+If the reasoning is not certain, write `[REASONING UNVERIFIED — needs human input]` next to the reasoning text.
+
+## Before implementing
+
+Read `/docs/decisions.md` at the start of every task. If your planned approach **contradicts** any existing entry:
+
+1. **STOP** — do not proceed with implementation.
+2. Output the contradiction: which decision is affected, what you planned to do, and why it conflicts.
+3. Wait for human approval before overriding the past decision.
+4. If approved, update the old entry with a note: `[SUPERSEDED by YYYY-MM-DD decision — reason]` and add the new entry at the top.

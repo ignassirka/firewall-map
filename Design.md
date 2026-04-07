@@ -1,4 +1,4 @@
-# Design Specification — Mona Lisa Privacy Map
+# Design Specification — Firewall map
 
 > Single source of truth for all UI components, interactions, layout, data, and design tokens.
 > Keep this document updated with every change.
@@ -30,7 +30,7 @@
 
 ## Overview
 
-A Proton VPN–inspired interactive privacy map prototype. Users can browse 93 countries, connect to VPN servers, explore five privacy-related data layers, and manage connection profiles — all inside a single-page dark-themed interface built with React + Vite + Tailwind CSS.
+Firewall map is a Proton VPN–inspired interactive privacy map prototype. Users can browse 93 countries, connect to VPN servers, explore five privacy-related data layers, and manage connection profiles — all inside a single-page dark-themed interface built with React + Vite + Tailwind CSS.
 
 The design is pixel-matched to a Figma source file (`qzGcfXk7hvUWOkjbrWnzxS`).
 

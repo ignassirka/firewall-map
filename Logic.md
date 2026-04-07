@@ -1,4 +1,4 @@
-# Logic Specification — Mona Lisa Privacy Map
+# Logic Specification — Firewall map
 
 > Documents all behavioral logic, state flows, component relationships, decision trees, and interaction rules.
 > Keep this document updated with every change.
